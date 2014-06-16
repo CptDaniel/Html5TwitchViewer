@@ -11,7 +11,7 @@ router.get('/api', function(req, res) {
             function(callback) {
                 var arr = [];
                 var resarr = '';
-                https.get('https://api.twitch.tv/kraken/streams?game=League+of+Legends&limit=15', function(resp) {
+                https.get('https://api.twitch.tv/kraken/streams?limit=20', function(resp) {
                     resp.setEncoding('utf8')
                     resp.on('data', function(d) {
                         resarr += d;
@@ -28,7 +28,6 @@ router.get('/api', function(req, res) {
 
             },
             function(names, done) {
-                var arr = [];
                 async.each(names, function(e, callback) {
                     var bla = '';
                     https.get('https://api.twitch.tv/api/channels/' + e.channel.name + '/access_token', function(resp) {
@@ -38,27 +37,26 @@ router.get('/api', function(req, res) {
                         });
                         resp.on('end', function() {
                             bla = JSON.parse(bla);
-                            arr.push(bla);
+                            bla = 'http://usher.justin.tv/api/channel/hls/' + e.channel.name + '.m3u8?token=' + bla.token + '&sig=' + bla.sig;
+                            names[names.indexOf(e)] = [e, bla];
                             callback(null);
                         });
                     });
                 }, function(err) {
                     if (err) throw err;
-                    done(null, arr);
+                    done(null, names);
                 });
             }
         ],
 
         function(err, result) {
-            console.log('LAST STEP');
             if (err) throw err;
-            var link = {};
-            result.forEach(function(e) {
-
-                var name = JSON.parse(e.token);
-                link[name.channel] = 'http://usher.justin.tv/api/channel/hls/' + name.channel + '.m3u8?token=' + e.token + '&sig=' + e.sig;
-            });
-            res.json(link);
+            // var link = {};
+            // result.forEach(function(e) {//     var name = JSON.parse(e[1].token);
+            //     link[name.channel] = 'http://usher.justin.tv/api/channel/hls/' + name.channel + '.m3u8?token=' + e.token + '&sig=' + e.sig;
+            // });
+            var sendarr = JSON.stringify(result);
+            res.json(sendarr);
         });
 
 });
