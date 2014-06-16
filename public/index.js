@@ -73,6 +73,7 @@ function search(param, val) {
         });
 
     } else if (param === 'Game') {
+        return false;
         console.log("GAMESEARCH");
         $.get('/api/search/game?name=' + val, function (data) {
 

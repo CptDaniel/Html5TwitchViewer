@@ -119,7 +119,7 @@ router.get('/api/search/:query', function(req, res) {
             });
 
     } else if (search === 'game'){
-
+    res.send(200);
         async.waterfall([
                 function(callback) {
                     var arr = [];
